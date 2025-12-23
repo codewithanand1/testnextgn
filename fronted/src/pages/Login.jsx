@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { name } from 'ejs'
-import React, { useState } from 'react'
-import { serverurl } from '../App'
+import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/UserData'
+import { serverurl } from '../context/UserData'
 
 function Login() {
     const [data,setData]=useState({
@@ -10,16 +10,22 @@ function Login() {
         password:''
     })
 
- const navigate=useNavigate()
+    const navigate=useNavigate()
+    const {getCurrentUser} = useContext(UserContext)
+    
     const handleSubmit=async (e) => {
         try {
             e.preventDefault();
             console.log(data);
             const result=await axios.post(`${serverurl}/api/auth/login`,data,{withCredentials:true});
             console.log(result.data);
+            
+            // Login successful होने पर user data को update करें
+            await getCurrentUser();
             navigate("/home");
         } catch (error) {
             console.log(error);
+            alert("Login failed. Please check your credentials.");
         }
     }
   return (

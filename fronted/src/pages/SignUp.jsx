@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { name } from 'ejs'
-import React, { useState } from 'react'
-import { serverurl } from '../App'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/UserData'
+import { serverurl } from '../context/UserData'
 
 function Signup() {
     const [data,setData]=useState({
@@ -11,7 +11,8 @@ function Signup() {
         email:'',
         password:''
     })
- const navigate=useNavigate()
+    const navigate=useNavigate()
+    const {getCurrentUser} = useContext(UserContext)
 
     const handleSubmit=async (e) => {
         try {
@@ -19,9 +20,13 @@ function Signup() {
             console.log(data)
             const result=await axios.post(`${serverurl}/api/auth/signup`,data,{withCredentials:true})
             console.log(result.data)
+            
+            // Signup successful होने पर user data को update करें
+            await getCurrentUser();
             navigate("/home")
         } catch (error) {
             console.log(error);
+            alert("Signup failed. Please try again.");
         }
     }
   return (
